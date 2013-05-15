@@ -213,7 +213,7 @@ write port in the fifth stage but its read port is in the second
 stage. We trace backwards from the {\tt wen} in the fifth stage to the
 second stage to find all the other {\tt wen} signals. For each 
 ({\tt wen}$_i$, {\tt waddr}$_i$) pair, we generate a hazard condition
-{\tt wen$_i$ === ren$_i$ \&\& waddr$_i$ === raddr}.
+{\tt wen$_i$ \&\& waddr$_i$ === raddr}.
 
 \subsection{Hazard Resolution Options}
 \begin{figure*}[htb]
