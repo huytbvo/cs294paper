@@ -1,4 +1,39 @@
 \section{Results}
+\begin{figure*}[htb]
+\centering
+  \begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/2stage.pdf}
+  \caption{2-stage}
+  \label{fig:2stage}
+  \vspace{20pt}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/3stage.pdf}
+  \caption{3-stage}
+  \label{fig:3stage}
+  \vspace{20pt}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/4stage.pdf}
+  \caption{4-stage}
+  \label{fig:4stage}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/5stage.pdf}
+  \caption{5-stage}
+  \label{fig:5stage}
+  \end{subfigure}
+\caption{{\bf Area vs Critical Path Comparison}. Area is measured in
+  square micron. Critical path is measured in nanosecond.}
+\label{fig:area-time}
+\end{figure*}
 To evaluate our pipeline synthesis tool, we write a 2-stage, 3-stage,
 4-stage, and 5-stage pipeline specification for a single cycle CPU
 datapath. We present CPI results to show that our synthesis tool is
@@ -21,33 +56,21 @@ the PC register and bypassing to forward results from the ALU and the
 data cache.
 
 \subsection{Comparison}
-\begin{figure*}
-\centering
-  \begin{subfigure}[t]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{figures/2stage.png}
-  \caption{2-stage}
-  \label{fig:2stage}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{figures/3stage.png}
-  \caption{3-stage}
-  \label{fig:3stage}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{figures/4stage.png}
-  \caption{4-stage}
-  \label{fig:4stage}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{figures/5stage.png}
-  \caption{5-stage}
-  \label{fig:5stage}
-  \end{subfigure}
-\end{figure*}
+In order to see how our auto-generated pipeline holds up against a
+hand-written pipeline, we push the pipelines through
+synthesis. Figure~\ref{fig:area-time} compares post-synthesis results
+between auto-generated pipelines and their hand-written
+counterparts. We push only the CPU portion (datapath and control path,
+no caches) of the processor through synthesis to better highlight the
+overhead of our pipeline synthesis tool. Figure~\ref{fig:2stage} and
+Figure~\ref{fig:3stage} shows that for shorter pipelines our synthesis
+tool introduces little overhead. This is due to the fact that there is
+very little freedom for placing pipeline registers and there are not
+that many hazards to resolve. Our tool performs much worse for larger
+pipelines (Figure~\ref{fig:4stage} and Figure~\ref{fig:5stage}) since
+there is more freedom for register placement (which could cause our
+tool to place more registers than needed) and because there are more
+hazards to resolve. In particular, the 4 and 5-stage pipelines have
+more bypass locations. Our tool generates an entire set of muxes for
+each of these write paths instead of coalescing these write paths and
+using only one mux as in the hand-coded versions.
