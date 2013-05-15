@@ -1,32 +1,112 @@
 \section{Specification}
+We utilize Chisel(Constructing Hardware In a Scala Embedded Language)
+as the basis of our datapath and pipelining specification. Chisel is
+an experimental hardware description language implemented through a
+set of class definitions within the high level programming language
+Scala. Chisel allows for the designer to fully leverage the high level
+object oriented programming features of the Scala language to
+succinctly describe hardware. A design described in Chisel can be
+mapped to a C++ simulator or Verilog emitted for either FPGA
+simulation or ASIC synthesis.
 
-\subsection{Chisel}
-We utilize Chisel(Constructing Hardware In a Scala Embedded Language) as the basis of our datapath and pipelining specification. Chisel is an experimental hardware description language implemented through a set of class definitions within the high level programming language Scala. Chisel allows for the designer to fully leverage the high level object oriented programming features of the Scala language to succinctly describe hardware. A design described in Chisel can be mapped to a C++ simulator or Verilog emitted for either FPGA simulation or ASIC synthesis.
 \subsection{Datapath Specification}
-The datapath can be specified by a set of architectural state elements and their next state update logic. We also add a special Variable Latency Interface to allow users to integrate into the datapath functional units that do not have valid output available every cycle, such as caches and multi-cycle divders. In the context of our specification, Chisel's existing syntax is used to wire up combinational logic and modules implementing the Variable Latency Interface, which functions as next state logic, to Reg and Transaction Mem constructs, which function as a single architectural state element and an addressable array of architecural state respectively.
+The datapath can be specified by a set of architectural state elements
+and their next state update logic. We also add a special Variable
+Latency Interface to allow users to integrate into the datapath
+functional units that do not have valid output available every cycle,
+such as caches and multi-cycle divders. In the context of our
+specification, Chisel's existing syntax is used to wire up
+combinational logic and modules implementing the Variable Latency
+Interface, which functions as next state logic, to Reg and Transaction
+Mem constructs, which function as a single architectural state element
+and an addressable array of architecural state respectively.
 
-{\bf Regs}. Regs are existing Chisel constructs that represent a single multi-bit wide flip-flop with synchronous reset and clock enable ports. They can be treated as single piece of architectural state that is conditionally updated by every transaction contingent on the clock enable input.
+{\bf Regs}. Regs are existing Chisel constructs that represent a
+single multi-bit wide flip-flop with synchronous reset and clock
+enable ports. They can be treated as single piece of architectural
+state that is conditionally updated by every transaction contingent on
+the clock enable input.
 
-{\bf Transaction Mems}. Transaction Mems are Chisel Components that wrap exisiting Chisel Mem constructs in an IO interface that helps the automatic synthesis tools detect bypassing opportunities. On instantiation the Transaction Mem allows the user to specify the number of lines in the memory, number of read ports on the IO, number of virtual write ports on the IO, and the number of physical write ports on the underlining Chisel Mem construct. Each read port consists of a read address input and a read data output. There is a one to one mapping between Transaction Mem read ports and underlining read ports in the Chisel Mem construct. Each virtual write port consists of a write address input, write enable input, and write data input. The Transaction Mem wrapper automatically maps the virtual write ports on the IO to the physical write ports of the underlining Chisel Mem construct. If the number of virtual write ports exceeds the number of physical write ports, the Transaction Mem module automatically coalesces multiple virtual write ports onto a single physical write port by muxing together the write datas and write addresses of the virtual write ports and ORing together the write enables of the virtual write ports. The user should wire each distinct source of write data along with the associated write enable and write address into separate virtual write ports rather than manually coalescing the write datas together with a mux and wiring the output of the mux into a single virtual write port in order to allow the automatic sythesis tools to generate fine grained bypass logic. This will be elaborated upon in [the section discussing bypass logic generation]. *Remember to insert picture later* 
+{\bf Transaction Mems}. Transaction Mems are Chisel Components that
+wrap exisiting Chisel Mem constructs in an IO interface that helps the
+automatic synthesis tools detect bypassing opportunities. On
+instantiation the Transaction Mem allows the user to specify the
+number of lines in the memory, number of read ports on the IO, number
+of virtual write ports on the IO, and the number of physical write
+ports on the underlining Chisel Mem construct. Each read port consists
+of a read address input and a read data output. There is a one to one
+mapping between Transaction Mem read ports and underlining read ports
+in the Chisel Mem construct. Each virtual write port consists of a
+write address input, write enable input, and write data input. The
+Transaction Mem wrapper automatically maps the virtual write ports on
+the IO to the physical write ports of the underlining Chisel Mem
+construct. If the number of virtual write ports exceeds the number of
+physical write ports, the Transaction Mem module automatically
+coalesces multiple virtual write ports onto a single physical write
+port by muxing together the write datas and write addresses of the
+virtual write ports and ORing together the write enables of the
+virtual write ports. The user should wire each distinct source of
+write data along with the associated write enable and write address
+into separate virtual write ports rather than manually coalescing the
+write datas together with a mux and wiring the output of the mux into
+a single virtual write port in order to allow the automatic sythesis
+tools to generate fine grained bypass logic. This will be elaborated
+upon in [the section discussing bypass logic generation]. *Remember to
+insert picture later*
 
-{\bf Variable Latency Interfaces}. Variable latency Interfaces are a Chisel Components that specify a set of user facing IO to allow users to integrate an existing variable/multi-cycle latency Chisel module into the datapath specification and a set of tool facing IO to allow the automatic synthesis tools to generate appropriate pipeline logic to deal with variable/multi-cycle latency modules. The Variable Latency Interface exposes on its user facing IO a request ready input, request data input, and response data output. The user connects the user facing IO to the rest of the datapath using standard Chisel syntax. The tool facing IO includes a request ready output and a response valid output. The tools use the request ready output to generate logic that puts back pressure on the pipeline stages before the variable latency module and use the response valid output to generate logic to insert bubbles into the pipeline stages after the variable latency module. Figure [xx] gives and example of how to integrate a Data Cache into the datapath specification through wrapping it in a Variable Latency Interface. *Remember to insert picture later* 
+{\bf Variable Latency Interfaces}. Variable latency Interfaces are a
+Chisel Components that specify a set of user facing IO to allow users
+to integrate an existing variable/multi-cycle latency Chisel module
+into the datapath specification and a set of tool facing IO to allow
+the automatic synthesis tools to generate appropriate pipeline logic
+to deal with variable/multi-cycle latency modules. The Variable
+Latency Interface exposes on its user facing IO a request ready input,
+request data input, and response data output. The user connects the
+user facing IO to the rest of the datapath using standard Chisel
+syntax. The tool facing IO includes a request ready output and a
+response valid output. The tools use the request ready output to
+generate logic that puts back pressure on the pipeline stages before
+the variable latency module and use the response valid output to
+generate logic to insert bubbles into the pipeline stages after the
+variable latency module. Figure [xx] gives and example of how to
+integrate a Data Cache into the datapath specification through
+wrapping it in a Variable Latency Interface. *Remember to insert
+picture later*
 
-Everything used in the datapath specification is either a built in Chisel construct(Regs and combinational logic) or a ordinary Chisel Component(TransactonMems and Variable Latency Module Interfaces). This allows the user to create a datapath specification in the exact same way they would write an ordinary Chisel module, with the exception that they have to use TransactionalMems in place of Mem constructs and have to wrap up funtional units that do not have valid output data every cycle in Variable Latency Interfaces. The datapath specification by itself, without any pipelining specification, functions as a single cycle implementation of the datapath.
+Everything used in the datapath specification is either a built in
+Chisel construct(Regs and combinational logic) or a ordinary Chisel
+Component(TransactonMems and Variable Latency Module Interfaces). This
+allows the user to create a datapath specification in the exact same
+way they would write an ordinary Chisel module, with the exception
+that they have to use TransactionalMems in place of Mem constructs and
+have to wrap up funtional units that do not have valid output data
+every cycle in Variable Latency Interfaces. The datapath specification
+by itself, without any pipelining specification, functions as a single
+cycle implementation of the datapath.
 
 \subsection {Pipelining Specification}
-Once the single cycle datapath has been specified, the user can add separate annotations to specify how the datapath should be pipelined. The main parameters in pipelining specification is the placement of the pipeline registers, the depth of the pipeline, and how pipeline hazards are resolved.
+Once the single cycle datapath has been specified, the user can add
+separate annotations to specify how the datapath should be
+pipelined. The main parameters in pipelining specification is the
+placement of the pipeline registers, the depth of the pipeline, and
+how pipeline hazards are resolved.
 
-{\bf Pipeline register placement}. The placement of the pipeline registers is specified by annotating combinational logic nodes and read/write ports of the architectural state elements with pipeline stage numbers. The user does not have to annotate all of the combinational logic nodes and read/write ports in the datapath in order to complete the pipelining specification. The synthesis tool is able to infer pipeline register placement even if the user only annotates a limited subset of combinational nodes or architectural state read/write ports. Of course, the user can achieve greater control over where the pipeline registers are placed by annotating more nodes with pipeline stage numbers. The details of the pipeline register placement are elaborated in [section about stage propagation]. 
+{\bf Pipeline register placement}. The placement of the pipeline
+registers is specified by annotating combinational logic nodes and
+read/write ports of the architectural state elements with pipeline
+stage numbers. The user does not have to annotate all of the
+combinational logic nodes and read/write ports in the datapath in
+order to complete the pipelining specification. The synthesis tool is
+able to infer pipeline register placement even if the user only
+annotates a limited subset of combinational nodes or architectural
+state read/write ports. Of course, the user can achieve greater
+control over where the pipeline registers are placed by annotating
+more nodes with pipeline stage numbers. The details of the pipeline
+register placement are elaborated in [section about stage
+  propagation].
 
-{\bf Pipeline depth}. Pipeline depth is inferred from the maximum pipeline stage number the user annotates a combinational logic node or read/write port with. 
+{\bf Pipeline depth}. Pipeline depth is inferred from the maximum
+pipeline stage number the user annotates a combinational logic node or
+read/write port with.
 
-{\bf Pipeline hazards}. Pipeline hazards fall into the categories of control hazard, data hazard, and structural hazard. Control hazards can be viewed as read-after-write(RAW) data hazards on the PC register in the context of processors. Write-after-read and write-after-write data hazards are not possible because we enforce that architectural state elements cannot have write ports be placed in a pipeline stage before the state element's read ports. Since we don't handle structual hazards, the only hazard that the automatic synthesis tools have to handle is RAW data hazards.
-
-RAW data hazards can be resolved in one of three ways: interlocking, bypassing, and speculation. The default RAW hazard resolution option is interlocking, so no additional specification is needed if the user wants to use interlocking to resolve all pipeline hazards. 
-
-In order to resolve RAW hazard through bypassing, the user adds the read port of an architectual state element to a list of read ports to be bypassed and the the automatic synthesis tool will generate logic that bypasses from all possible bypassing paths to all the consumers of that read port. Details on how all the possible bypass paths are detected are discussed in [section about bypassing]. The user can also add write ports of architectural state to a list of write ports to not bypass data from. This tells the automatic synthesis tools to never bypass from the write paths associated with those write ports, which is desirable when the user knows that a particular write path has a long critcal path. *move to future work section* In the future, we hope to implement more fine grained ways to specify bypassing, such as as letting the user choose exactly which pipeline stages they want each write path to be bypassed from.
-
-In order to resolve RAW hazard through speculation, the user annotates architectural state elements with a speculated write data value. We give the user freedom to use any Chisel data node for the speculated write data value, so the user may put in anything for the speculated value, including output from hand written predictor modules. The automatic synthesis tools will generate logic that updates the state element with the speculated value, logic that detects when a misspeculation occurs, and recovery logic that writes the actual write data value into the state element and kills transactions in the datapath that depend on the speculated value when a misspeculation occurs. The automatic synthesis tool does not need to restore achitectural state in state elements other than the state element that caused the misspeculation because we enforce that no architectural state element write ports are placed in pipeline stages where there maybe an unchecked speculated value.
-
-The pipelining specification is completely separate from the datapath specification, which allows the user to easily change pipeline parameters by reusing the datapath specification and changing the pipelining specification.
 
