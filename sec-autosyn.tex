@@ -29,7 +29,7 @@ interlocks (default), speculation, or bypassing.
 
 {\bf Runtime}. The user annotates a set of combinational logic nodes
 and architectural state read/write ports with pipeline stage
-numbers. The user can annotate only the big pieces of combinational
+numbers. The user can annotate just the big pieces of combinational
 logic and architectual state they care about, such as ALUs, register
 files, or caches, and the automatic synthesis tool will infer the
 placement of all the other parts of the datapath. Of course, the user
@@ -168,11 +168,10 @@ maybe an unchecked speculated value.
 
 In order to resolve RAW hazard through bypassing, the user adds the
 read port of an architectual state element to a list of read ports to
-be bypassed and the the automatic synthesis tool will generate logic
+be bypassed to and the the automatic synthesis tool will generate logic
 that bypasses from all possible bypassing paths to all the consumers
 of that read port. The user can also
-add write ports of architectural state to a list of write ports to not
-bypass data from. This tells the automatic synthesis tools to never
+add write ports of architectural state to a list of write ports to be avoided in the bypassing logic generation. This tells the automatic synthesis tools to never
 bypass from the write paths associated with those write ports, which
 is desirable when the user knows that a particular write path has a
 long critcal path. *move to future work section* In the future, we
@@ -302,17 +301,9 @@ signals do not match. The kill signal is used to write the correct
 value into the {\tt Reg} and we kill stage one.
 
 {\bf Bypassing}. 
+The user can use the {\tt bypassTo} function to add an architecural state read port to a list of read ports to be bypassed, which will be referred to as the bypass read ports list. The user may also use the {\tt avoidBypassFrom} function to annotate that certain write paths should never be bypassed from by adding architecural state write prots to a list of write ports not to be bypassed from, which will be referred to as the non-bypass write ports list
 
-{\bf Runtime}. The user annotates which architectural state read ports
-should have their values be replaced by bypassed values by adding
-those read ports to a list of read ports to be bypassed, which will be
-referred to as the bypass read ports list. The user may also annotate
-that certain write paths should never be bypassed from by adding
-architectural state write ports to a list of write ports not to be
-bypassed from, which will be referred to as the non-bypass write ports
-list.
-
-{\bf Elaboration time}. For each read port added to bypass read ports
+For each read port added to bypass read ports
 list, we look at all of the write ports not on the non-bypass write
 ports list writing the architectural state the read port is attached
 to and trace the write enable, write data, and write address signals
