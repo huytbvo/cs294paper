@@ -1,3 +1,18 @@
 \section{Conclusion and Future Work}
+We have presented an automatic pipeline synthesis tool intended to
+improve designer productivity by reducing the time spent writing
+RTL. Our tool allows users to write a datapath without worrying about
+the pipelining logic since the pipeline specification is kept separate
+from the datapath. We also expect to improve design space exploration
+since the same datapath can be combined with different pipeline
+specifications to produce different design points. Currently, we can
+use our tool to generate a 2, 3, 4, and 5 stage processor and resolve
+pipelining hazards through interlocks, speculation and bypassing. Our
+results show that we have very little overhead for small pipelines but
+this overhead increases as we increase the pipelining depth due to
+larger degree of freedom for pipeline placement and an increase in
+pipeline hazards. 
 
-
+In future work, we plan on improving our pipeline register placement
+and bypass network generation. We also plan on trying out our tool on
+different processors. 
