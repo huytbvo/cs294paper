@@ -301,15 +301,15 @@ signals do not match. The kill signal is used to write the correct
 value into the {\tt Reg} and we kill stage one.
 
 {\bf Bypassing}. 
-The user can use the {\tt bypassTo} function to add an architecural state read port to a list of read ports to be bypassed, which will be referred to as the bypass read ports list. The user may also use the {\tt avoidBypassFrom} function to annotate that certain write paths should never be bypassed from by adding architecural state write prots to a list of write ports not to be bypassed from, which will be referred to as the non-bypass write ports list
+The user can use the {\tt bypassTo} function to annotate that a read port should be bypassed to by adding it to a list, which will be referred to as the bypass read ports list. The user may also use the {\tt avoidBypassFrom} function to annotate that certain write paths should never be bypassed from by adding the architecural state write ports associated with the write paths to be avoided to a list, which will be referred to as the non-bypass write ports list
 
-For each read port added to bypass read ports
+In the graph transformation, for each read port added to bypass read ports
 list, we look at all of the write ports not on the non-bypass write
 ports list writing the architectural state the read port is attached
 to and trace the write enable, write data, and write address signals
 back through the pipeline. For each pipeline stage where the write
-enable, write data, and write address are all available, we mux the
-write data with the original read port data wire with the mux
-condition {\tt wen \&\& waddr$_i$ === raddr}. We then remove that mux
+enable, write data, and write address are all available, we generate a mux in front of the original read port data wire that muxes in the write data from that pipeline stage on the condition {\tt wen \&\& waddr$_i$ === raddr}. We then remove that mux
 condition from the list of interlock hazard conditions so that the
-pipeline does not interlock when bypassing is possible.
+pipeline does not interlock when bypassing is possible. When a single write data path is available from multiple pipieline stages, the mux chain in front of the read port data sire is generated such that the write data from the earlier pipeline stage takes priority over the the write data from later pipeline stages, because data should be bypassed from the most recent transaction to go down the pipeline.
+
+To see how our bypass logic generation works, let's examine the pipeline in Figure~\ref{fig:bypass}. In this example, the user annotated that the second read port of the TMem should be bypassed to and also annotated that the write path from the data cache should not be bypassed from. Assuming that the write enable and write address for the ALU is available starting from the 4th stage, our tool generates a mux chain to bypass from both the 4th stage and 5th stage version of the ALU output.
