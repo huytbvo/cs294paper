@@ -1,14 +1,4 @@
 \section{Automatic Pipeline Synthesis}
-There are three major parts to our automatic pipeline synthesis
-tool. Given a datapath and a pipeline specification, we first
-determine register placement and color every node in the datapath with
-their appropriate stage number. Next, we analyze the datapath to find
-all sources of hazards and produce a list of hazard
-conditions. Finally, we resolve these hazards through either
-interlocks (default), speculation, or bypassing.
-
-We perform the Chisel Node graph transformations required for pipeline register placement and hazard resolution through the Chisel's elabortion time interface, which takes in a list of transformations on the Chisel Node graph and executes the transformations at elaboration time.
-\subsection{Pipeline Register Placement and Stage Coloring}
 \begin{figure*}[htb]
 \centering
   \begin{subfigure}[t]{0.8\textwidth}
@@ -35,6 +25,16 @@ We perform the Chisel Node graph transformations required for pipeline register 
 \label{fig:datapath}
 \end{figure*}
 
+There are three major parts to our automatic pipeline synthesis
+tool. Given a datapath and a pipeline specification, we first
+determine register placement and color every node in the datapath with
+their appropriate stage number. Next, we analyze the datapath to find
+all sources of hazards and produce a list of hazard
+conditions. Finally, we resolve these hazards through either
+interlocks (default), speculation, or bypassing.
+
+We perform the Chisel Node graph transformations required for pipeline register placement and hazard resolution through the Chisel's elabortion time interface, which takes in a list of transformations on the Chisel Node graph and executes the transformations at elaboration time.
+\subsection{Pipeline Register Placement and Stage Coloring}
 The user annotates a set of combinational logic nodes
 and architectural state read/write ports with pipeline stage
 numbers. The user can annotate just the big pieces of combinational
