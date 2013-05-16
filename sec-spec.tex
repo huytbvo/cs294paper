@@ -12,37 +12,37 @@ synthesis.
 
 \subsection{Datapath Specification}
 The datapath can be specified by a set of architectural state elements
-and their next state update logic. We also add a special Variable
-Latency Interface to allow users to integrate into the datapath
+and their next state update logic. We also add a special {\tt Variable
+Latency Interface} to allow users to integrate into the datapath
 functional units that do not have valid output available every cycle,
 such as caches and multi-cycle divders. In the context of our
 specification, Chisel's existing syntax is used to wire up
-combinational logic and modules implementing the Variable Latency
-Interface, which functions as next state logic, to Reg and Transaction
-Mem constructs, which function as a single architectural state element
+combinational logic and modules implementing the {\tt Variable Latency
+Interface}, which functions as next state logic, to {\tt Reg} and {\tt Transaction
+Mem} constructs, which function as a single architectural state element
 and an addressable array of architecural state respectively.
 
-{\bf Regs}. Regs are existing Chisel constructs that represent a
+{\bf Regs}. {\tt Regs} are existing Chisel constructs that represent a
 single multi-bit wide flip-flop with synchronous reset and clock
 enable ports. They can be treated as single piece of architectural
 state that is conditionally updated by every transaction contingent on
 the clock enable input.
 
-{\bf Transaction Mems}. Transaction Mems are Chisel Components that
+{\bf Transaction Mems}. {\tt Transaction Mems} are Chisel Components that
 wrap exisiting Chisel Mem constructs in an IO interface that helps the
 automatic synthesis tools detect bypassing opportunities. On
-instantiation the Transaction Mem allows the user to specify the
+instantiation the {\tt Transaction Mem} allows the user to specify the
 number of lines in the memory, number of read ports on the IO, number
 of virtual write ports on the IO, and the number of physical write
 ports on the underlining Chisel Mem construct. Each read port consists
 of a read address input and a read data output. There is a one to one
-mapping between Transaction Mem read ports and underlining read ports
+mapping between {\tt Transaction Mem} read ports and underlining read ports
 in the Chisel Mem construct. Each virtual write port consists of a
 write address input, write enable input, and write data input. The
-Transaction Mem wrapper automatically maps the virtual write ports on
+{\tt Transaction Mem} wrapper automatically maps the virtual write ports on
 the IO to the physical write ports of the underlining Chisel Mem
 construct. If the number of virtual write ports exceeds the number of
-physical write ports, the Transaction Mem module automatically
+physical write ports, the {\tt Transaction Mem} module automatically
 coalesces multiple virtual write ports onto a single physical write
 port by muxing together the write datas and write addresses of the
 virtual write ports and ORing together the write enables of the
@@ -95,14 +95,14 @@ how pipeline hazards are resolved.
 {\bf Pipeline register placement}. The placement of the pipeline
 registers is specified by annotating combinational logic nodes and
 read/write ports of the architectural state elements with pipeline
-stage numbers. The user does not have to annotate all of the
-combinational logic nodes and read/write ports in the datapath in
-order to complete the pipelining specification. The synthesis tool is
-able to infer pipeline register placement even if the user only
-annotates a limited subset of combinational nodes or architectural
-state read/write ports. Of course, the user can achieve greater
-control over where the pipeline registers are placed by annotating
-more nodes with pipeline stage numbers. The details of the pipeline
+stage numbers. The user can annotate just the big pieces of combinational
+logic and architectual state they care about, such as ALUs, register
+files, or caches, and the automatic synthesis tool will infer the
+placement of all the other parts of the datapath. Of course, the user
+gains more control over the placement of the pipeline registers by
+adding more pipeline stage annotations. The user can have complete
+control over the placement of the pipeline registers if they annotate
+every combinational logic node and read/write port in the datapath. The details of the pipeline
 register placement are elaborated in [section about stage
   propagation].
 

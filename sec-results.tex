@@ -41,7 +41,8 @@ effective in improving performance. We also push our auto-generated
 pipeline through Design Compiler synthesis tool using TSMC's 45nm CMOS
 library and compare the post-synthesis results to hand-coded 2-stage,
 3-stage, 4-stage, and 5-stage pipelines.
-
+\subsection{CPI}
+As shown by Figure[xx], our synthesis tool does indeed improve performance by utilizing speculation and bypassing as expected. The 2-stage and 3-stage CPUs have their branches resolved in the 2nd pipeline stage and the 4-stage and 5-stage CPUS have their branches resolved in the 3rd pipeline stage. Speculation is is performed on the PC register and bypassing is performed on both read ports of the register file. There is little performance improvement from turning on bypassing without turning on speculation because most of the RAW hazards on the register file are covered up by interlocks on the PC register.
 \subsection{Sodor}
 Sodor is a set of simple processors written in Chisel. We use Sodor's
 1-stage processor for the datapath specification. In order to work
