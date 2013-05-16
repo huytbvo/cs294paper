@@ -120,8 +120,15 @@ Once the stage number propagation is complete, we traverse the Chisel
 Node graph again and insert the appropriate number of pipeline
 registers between any adjacent nodes with different stage numbers and
 on any nodes with more than one stage number in its stage numbers list
-in the stage numbers map. Refer to [figure xx] for pseudo code on the
+in the stage numbers map. Refer to Figure~\ref{fig:propagate} for pseudo code on the
 stage number propagation algorithm. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics{figures/propagate_pseudo_code.pdf}
+\caption{{\bf Pipeline Stage Propagate Pseudo Code}}
+\label{fig:propagate}
+\end{figure}
 
 \subsection{Hazard Discussion}
 \begin{figure*}[htb]
@@ -184,10 +191,7 @@ of that read port. The user can also
 add write ports of architectural state to a list of write ports to be avoided in the bypassing logic generation. This tells the automatic synthesis tools to never
 bypass from the write paths associated with those write ports, which
 is desirable when the user knows that a particular write path has a
-long critical path. *move to future work section* In the future, we
-hope to implement more fine grained ways to specify bypassing, such as
-as letting the user choose exactly which pipeline stages they want
-each write path to be bypassed from.
+long critical path.
 
 The pipelining specification is completely separate from the datapath
 specification, which allows the user to easily change pipeline

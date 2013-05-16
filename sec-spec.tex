@@ -32,7 +32,7 @@ the clock enable input.
 \centering
 \includegraphics{figures/TMEM.pdf}
 \caption{{\bf Transaction Mem} Shows an example of a Transaction Mem with many virtual write ports, one physical write port, and two read ports}
-\label{fig:CPI}
+\label{fig:tmem}
 \end{figure}
 
 {\bf Transaction Mems}. Transaction Mems are Chisel Components that
@@ -59,13 +59,12 @@ into separate virtual write ports rather than manually coalescing the
 write data together with a mux and wiring the output of the mux into
 a single virtual write port in order to allow the automatic synthesis
 tools to generate fine grained bypass logic. This will be elaborated
-upon in [the section discussing bypass logic generation]. *Remember to
-insert picture later*
+upon in 4.3.
 \begin{figure}[htb]
 \centering
 \includegraphics{figures/VLI.pdf}
 \caption{{\bf Variable Latency Interface} Blue wires are user facing IO and read wires are tool facing IO.}
-\label{fig:CPI}
+\label{fig:vli}
 \end{figure}
 
 {\bf Variable Latency Interface}. Variable latency Interfaces are a
@@ -82,10 +81,9 @@ response valid output. The tools use the request ready output to
 generate logic that puts back pressure on the pipeline stages before
 the variable latency module and use the response valid output to
 generate logic to insert bubbles into the pipeline stages after the
-variable latency module. Figure [xx] gives and example of how to
+variable latency module. Figure~\ref{fig:vli}gives and example of how to
 integrate a Data Cache into the datapath specification through
-wrapping it in a Variable Latency Interface. *Remember to insert
-picture later*
+wrapping it in a Variable Latency Interface.
 
 Everything used in the datapath specification is either a built in
 Chisel construct(Regs and combinational logic) or a ordinary Chisel
@@ -116,8 +114,7 @@ gains more control over the placement of the pipeline registers by
 adding more pipeline stage annotations. The user can have complete
 control over the placement of the pipeline registers if they annotate
 every combinational logic node and read/write port in the datapath. The details of the pipeline
-register placement are elaborated in [section about stage
-  propagation].
+register placement are elaborated in section 4.1.
 
 {\bf Pipeline depth}. Pipeline depth is inferred from the maximum
 pipeline stage number the user annotates a combinational logic node or
