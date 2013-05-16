@@ -52,7 +52,7 @@ As shown by Figure[xx], our synthesis tool does indeed improve performance by ut
 \subsection{Sodor}
 Sodor is a set of simple processors written in Chisel. We use Sodor's
 1-stage processor for the datapath specification. In order to work
-with our tool, we modify the 1stage to use {\tt TransacationalMem}
+with our tool, we modify the 1stage to use {\tt TransactionalMem}
 instead of {\tt Mem} and wrapped the instruction and data cache with
 our variable latency interface. Sodor also provides 2 and 5-stage
 in-order processor that we use to compare against our auto-generated 2
