@@ -1,0 +1,29 @@
+\section{Related Works}
+\label{sec:related-work}
+
+Our paper shares the same high level goal as
+Halide~\cite{halide:siggraph}: decoupling the algorithm from the
+scheduling to simplify the algorithm specification. Halide allows
+programmers to write high performance image processing pipelines
+without sacrificing readability in a domain-specific language that can
+be compiled to different backends. Our pipeline synthesis tool allows
+the user to describe a hardware datapath (the algorithm) and the pipeline
+specification (the scheduling) for that datapath separately. The
+Spiral~\cite{hoe:spiral} hardware generation framework and system
+also follows a similar theme. Spiral allows users to generate hardware
+for linear transforms from input problem specifications and directives
+that describe the datapath. Nurvitadhi et al~\cite{hoe:syn} present
+separate tools T-spec for transactional datapath specification and
+T-piper for automatic pipeline synthesis. T-spec is used to describe
+transactional datapaths as state elements and acyclic next-state logic
+blocks that updates those state elements. Users manually annotate all
+the state elements and next-stage logic blocks with the pipeline
+stage number. T-piper analyzes the T-spec design to identify RAW
+hazards and generate hazard resolution logic. Our tool is
+different in that the datapath and pipeline specification are both
+within the same language. The datapath specification does not have any
+notion of stage number and the pipeline specification is maintained
+separately from the datapath. Our synthesis tool then takes as input
+the datapath and pipeline specification to infer pipeline register
+placement and generate the appropriate hazard resolution logic.
+

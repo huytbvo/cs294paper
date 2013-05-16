@@ -266,23 +266,23 @@ first stage that is used to stall only the first stage. A bubble is
 pushed into stage two if this hazard condition is asserted the second
 stage's hazard condition is not asserted.
 
-{\bf Speculation}. Our tool provides
-the function {\tt speculate} that users can use to specify the {\tt
-  Node} whose value they want to speculate along with the value they
-want to use for speculation. This hazard resolution option is useful
-for transactions that produce data that takes on one value with a very
-high likelihood since we can have dependent transactions guess that
-value, allowing us to avoid stalls. In a processor pipeline, for
-example, transactions will usually write {\tt PC+4} to the PC
-register. To take advantage of this regularity, we can guess that
-every transaction will write {\tt PC+4} to the {\tt PC}
-register. During elaboration, we modify the Chisel graph to use the
-speculation value that the user provides to update the node that the
-user marks for speculation. The speculation value is pipelined until
-the actual data value is produced. We compare the speculation value to
-the actual value. If the values match, we continue as
-normal. Otherwise, we flush every stage starting at the speculation stage
-up to but not including the stage where the speculation value is checked.
+{\bf Speculation}. Our tool provides the function {\tt speculate} that
+users can use to specify the stage element whose write value they want
+to speculate along with the value they want to use for
+speculation. This hazard resolution option is useful for transactions
+that produce data that takes on one value with a very high likelihood
+since we can have dependent transactions guess that value, allowing us
+to avoid stalls. In a processor pipeline, for example, transactions
+will usually write {\tt PC+4} to the PC register. To take advantage of
+this regularity, we can guess that every transaction will write {\tt
+  PC+4} to the {\tt PC} register. During elaboration, we modify the
+Chisel graph to use the speculation value that the user provides to
+update the node that the user marks for speculation. The speculation
+value is pipelined until the actual data value is produced. We compare
+the speculation value to the actual value. If the values match, we
+continue as normal. Otherwise, we flush every stage starting at the
+speculation stage up to but not including the stage where the
+speculation value is checked.
 
 To see how our speculation tool works, let's examine the pipeline in
 Figure~\ref{fig:spec}. Notice that since every
