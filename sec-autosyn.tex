@@ -14,24 +14,31 @@ We perform the Chisel Node graph transformations required for pipeline register 
   \begin{subfigure}[t]{0.8\textwidth}
   \centering
   \includegraphics[width=\textwidth]{figures/pipeline.pdf}
-  \caption{Datapath Graph.}
+  \caption{{\bf Datapath Graph}. CPU datapath represented as a
+    directed dataflow graph in Chisel.}
   \label{fig:datapathgrah}
   \end{subfigure}
   \begin{subfigure}[t]{0.8\textwidth}
   \vspace{20pt}
   \centering
   \includegraphics[width=\textwidth]{figures/pipelinedag.pdf}
-  \caption{Datapath turned into a DAG.}
+  \caption{{\bf Datapath DAG}. 5-stage CPU datapath turned into a
+    directed acyclic graph by breaking {\tt Reg} nodes and {\tt
+      TransactionalMem} into read and write ports. The dashed lines
+    represent pipeline boundaries.}
   \label{fig:datapathdag}
   \end{subfigure}
-\caption{CPU Datapath}
+\caption{{\bf 5-stage CPU Datapath}. ALU = arithmetic logic unit. D\$
+  = data cache. I\$ =  instruction cache. TMem =
+  TransactionalMem. {\tt x}.R = read port of node {\tt x}. {\tt x}.W =
+  write port of node {\tt x}}
 \label{fig:datapath}
 \end{figure*}
 
 The user annotates a set of combinational logic nodes
 and architectural state read/write ports with pipeline stage
 numbers. The user can annotate just the big pieces of combinational
-logic and architectual state they care about, such as ALUs, register
+logic and architectural state they care about, such as ALUs, register
 files, or caches, and the automatic synthesis tool will infer the
 placement of all the other parts of the datapath. Of course, the user
 gains more control over the placement of the pipeline registers by
@@ -41,7 +48,7 @@ every combinational logic node and read/write port in the datapath.
 
 The elaboration time transformation function
 first breaks the original cyclic Chisel Node graph into an acyclic
-graph by separating architectual states into read ports and write
+graph by separating architectural states into read ports and write
 ports. Then the known pipeline stage numbers from the user annotated
 Chisel Nodes are propagated to their producers and consumers in a
 pseudo breadth-first-search(BFS) manner. When two propagation
@@ -55,7 +62,7 @@ stage of the automatic pipeline synthesis.
 numbers are kept track of in a map of Nodes to List of Stage Numbers
 that we will refer to as the stage number map. Initially, only the
 user annotated nodes have non-empty values in the stage number map. In
-the pseudo BFS traversal, the propagation frontier(ie the nodes that
+the pseudo BFS traversal, the propagation frontier(i.e. the nodes that
 have yet to propagate out their stage numbers) is kept track of with a
 queue. The propagation frontier queue is initialized with the user
 annotated nodes. As with a normal BFS traversal, the head of the
@@ -76,7 +83,7 @@ stage number in its stage number list in the stage number map and (2)
 all of the nodes children are ready to receive a stage number.  
 
 Condition (1) makes sure that the propagation front has reached the
-node, which means that the node must have atleast one stage number in
+node, which means that the node must have at least one stage number in
 its stage number list, and that two propagation frontiers have not
 meet at that node, which means that the node must have less than 2
 stage numbers in its stage number list.  
@@ -122,17 +129,19 @@ stage number propagation algorithm.
   \begin{subfigure}[t]{0.8\textwidth}
   \centering
   \includegraphics[width=\textwidth]{figures/pipelinehazard.pdf}
-  \caption{Hazard Detection.}
+  \caption{{\bf Hazard Detection}. All the hazards that
+    the {\tt TransactionalMem} generates in a 5-stage pipeline.}
   \label{fig:haz}
   \end{subfigure}
   \begin{subfigure}[t]{0.8\textwidth}
   \vspace{20pt}
   \centering
   \includegraphics[width=\textwidth]{figures/pipelineinterlock.pdf}
-  \caption{Interlocks.}
+  \caption{{\bf Interlocks}. The hazard conditions stall the
+  first and second stage and push bubbles into the third stage.}
   \label{fig:int}
   \end{subfigure}
-\caption{Resolving hazards through interlocks}
+\caption{Resolving hazards through interlocks.}
 \label{fig:hazint}
 \end{figure*}
 
@@ -142,7 +151,7 @@ can be viewed as read-after-write(RAW) data hazards on the PC register
 in the context of processors. Write-after-read and write-after-write
 data hazards are not possible because we enforce that architectural
 state elements cannot have write ports be placed in a pipeline stage
-before the state element's read ports. Since we don't handle structual
+before the state element's read ports. Since we don't handle structural
 hazards, the only hazard that the automatic synthesis tools have to
 handle is RAW data hazards.
 
@@ -158,24 +167,24 @@ write data value, so the user may put in anything for the speculated
 value, including output from hand written predictor modules. The
 automatic synthesis tools will generate logic that updates the state
 element with the speculated value, logic that detects when a
-misspeculation occurs, and recovery logic that writes the actual write
+miss-speculation occurs, and recovery logic that writes the actual write
 data value into the state element and kills transactions in the
-datapath that depend on the speculated value when a misspeculation
+datapath that depend on the speculated value when a miss-speculation
 occurs. The automatic synthesis tool does not need to restore
-achitectural state in state elements other than the state element that
-caused the misspeculation because we enforce that no architectural
+architectural state in state elements other than the state element that
+caused the miss-speculation because we enforce that no architectural
 state element write ports are placed in pipeline stages where there
 maybe an unchecked speculated value. 
 
 In order to resolve RAW hazard through bypassing, the user adds the
-read port of an architectual state element to a list of read ports to
+read port of an architectural state element to a list of read ports to
 be bypassed to and the the automatic synthesis tool will generate logic
 that bypasses from all possible bypassing paths to all the consumers
 of that read port. The user can also
 add write ports of architectural state to a list of write ports to be avoided in the bypassing logic generation. This tells the automatic synthesis tools to never
 bypass from the write paths associated with those write ports, which
 is desirable when the user knows that a particular write path has a
-long critcal path. *move to future work section* In the future, we
+long critical path. *move to future work section* In the future, we
 hope to implement more fine grained ways to specify bypassing, such as
 as letting the user choose exactly which pipeline stages they want
 each write path to be bypassed from.
@@ -209,7 +218,7 @@ state elements. In this example, the {\tt Reg} node and the
 the read and write ports of these state elements to determine whether
 or not there are any hazards. The {\tt Reg} has its write port in the
 second stage but its read port is in the first stage. So we generate a
-hazard signal in the first stage. The {\tt Transactionalmem} has its
+hazard signal in the first stage. The {\tt TransactionalMem} has its
 write port in the fifth stage but its read port is in the second
 stage. We trace backwards from the {\tt wen} in the fifth stage to the
 second stage to find all the other {\tt wen} signals. For each 
@@ -222,17 +231,21 @@ second stage to find all the other {\tt wen} signals. For each
   \begin{subfigure}[t]{0.8\textwidth}
   \centering
   \includegraphics[width=\textwidth]{figures/pipelinespec.pdf}
-  \caption{Speculation.}
+  \caption{{\bf Speculation}. Using speculation to resolve hazards on
+    the {\tt Reg} node whose read port is in the first stage and write port
+  is in the second stage.}
   \label{fig:spec}
   \end{subfigure}
   \begin{subfigure}[t]{0.8\textwidth}
   \vspace{20pt}
   \centering
   \includegraphics[width=\textwidth]{figures/pipelinebypass.pdf}
-  \caption{Bypassing.}
+  \caption{{\bf Bypassing}. Bypassing network generated to forward ALU
+  results from the third stage, fourth stage, and fifth stage to the
+  {\tt TransactionalMem}'s second read port.}
   \label{fig:bypass}
   \end{subfigure}
-\caption{Resolving hazards through speculation and bypassing}
+\caption{Resolving hazards through speculation and bypassing.}
 \label{fig:specbyp}
 \end{figure*}
 
@@ -291,7 +304,7 @@ transaction writes to the {\tt Reg} node in the second stage while
 another transaction reads the node in the first stage, the interlock
 hazard resolution option would cause our pipeline to stall every other
 cycle. This scenario is a good match for the speculation resolution
-option since transactions tend to write a very predicatable value into
+option since transactions tend to write a very predictable value into
 that node. We use the {\tt speculate} function to indicate that we
 are guessing that the {\tt Reg} node will take on {\tt SpecVal}. We
 mux in {\tt SpecVal} into the {\tt Reg} and then pipeline {\tt
@@ -302,7 +315,7 @@ signals do not match. The kill signal is used to write the correct
 value into the {\tt Reg} and we kill stage one.
 
 {\bf Bypassing}. 
-The user can use the {\tt bypassTo} function to annotate that a read port should be bypassed to by adding it to a list, which will be referred to as the bypass read ports list. The user may also use the {\tt avoidBypassFrom} function to annotate that certain write paths should never be bypassed from by adding the architecural state write ports associated with the write paths to be avoided to a list, which will be referred to as the non-bypass write ports list
+The user can use the {\tt bypassTo} function to annotate that a read port should be bypassed to by adding it to a list, which will be referred to as the bypass read ports list. The user may also use the {\tt avoidBypassFrom} function to annotate that certain write paths should never be bypassed from by adding the architectural state write ports associated with the write paths to be avoided to a list, which will be referred to as the non-bypass write ports list
 
 In the graph transformation, for each read port added to bypass read ports
 list, we look at all of the write ports not on the non-bypass write
@@ -311,6 +324,6 @@ to and trace the write enable, write data, and write address signals
 back through the pipeline. For each pipeline stage where the write
 enable, write data, and write address are all available, we generate a mux in front of the original read port data wire that muxes in the write data from that pipeline stage on the condition {\tt wen \&\& waddr$_i$ === raddr}. We then remove that mux
 condition from the list of interlock hazard conditions so that the
-pipeline does not interlock when bypassing is possible. When a single write data path is available from multiple pipieline stages, the mux chain in front of the read port data sire is generated such that the write data from the earlier pipeline stage takes priority over the the write data from later pipeline stages, because data should be bypassed from the most recent transaction to go down the pipeline.
+pipeline does not interlock when bypassing is possible. When a single write data path is available from multiple pipeline stages, the mux chain in front of the read port data sire is generated such that the write data from the earlier pipeline stage takes priority over the the write data from later pipeline stages, because data should be bypassed from the most recent transaction to go down the pipeline.
 
 To see how our bypass logic generation works, let's examine the pipeline in Figure~\ref{fig:bypass}. In this example, the user annotated that the second read port of the TMem should be bypassed to and also annotated that the write path from the data cache should not be bypassed from. Assuming that the write enable and write address for the ALU is available starting from the 4th stage, our tool generates a mux chain to bypass from both the 4th stage and 5th stage version of the ALU output.

@@ -15,12 +15,12 @@ The datapath can be specified by a set of architectural state elements
 and their next state update logic. We also add a special {\tt Variable
 Latency Interface} to allow users to integrate into the datapath
 functional units that do not have valid output available every cycle,
-such as caches and multi-cycle divders. In the context of our
+such as caches and multi-cycle dividers. In the context of our
 specification, Chisel's existing syntax is used to wire up
-combinational logic and modules implementing the {\tt Variable Latency
-Interface}, which functions as next state logic, to {\tt Reg} and {\tt Transaction
-Mem} constructs, which function as a single architectural state element
-and an addressable array of architecural state respectively.
+combinational logic and modules implementing the Variable Latency
+Interface, which functions as next state logic, to Reg and Transaction
+Mem constructs, which function as a single architectural state element
+and an addressable array of architectural state respectively.
 
 {\bf Regs}. {\tt Regs} are existing Chisel constructs that represent a
 single multi-bit wide flip-flop with synchronous reset and clock
@@ -28,8 +28,8 @@ enable ports. They can be treated as single piece of architectural
 state that is conditionally updated by every transaction contingent on
 the clock enable input.
 
-{\bf Transaction Mems}. {\tt Transaction Mems} are Chisel Components that
-wrap exisiting Chisel Mem constructs in an IO interface that helps the
+{\bf Transaction Mems}. Transaction Mems are Chisel Components that
+wrap existing Chisel Mem constructs in an IO interface that helps the
 automatic synthesis tools detect bypassing opportunities. On
 instantiation the {\tt Transaction Mem} allows the user to specify the
 number of lines in the memory, number of read ports on the IO, number
@@ -44,13 +44,13 @@ the IO to the physical write ports of the underlining Chisel Mem
 construct. If the number of virtual write ports exceeds the number of
 physical write ports, the {\tt Transaction Mem} module automatically
 coalesces multiple virtual write ports onto a single physical write
-port by muxing together the write datas and write addresses of the
+port by muxing together the write data and write addresses of the
 virtual write ports and ORing together the write enables of the
 virtual write ports. The user should wire each distinct source of
 write data along with the associated write enable and write address
 into separate virtual write ports rather than manually coalescing the
-write datas together with a mux and wiring the output of the mux into
-a single virtual write port in order to allow the automatic sythesis
+write data together with a mux and wiring the output of the mux into
+a single virtual write port in order to allow the automatic synthesis
 tools to generate fine grained bypass logic. This will be elaborated
 upon in [the section discussing bypass logic generation]. *Remember to
 insert picture later*
@@ -80,7 +80,7 @@ Component(TransactonMems and Variable Latency Module Interfaces). This
 allows the user to create a datapath specification in the exact same
 way they would write an ordinary Chisel module, with the exception
 that they have to use TransactionalMems in place of Mem constructs and
-have to wrap up funtional units that do not have valid output data
+have to wrap up functional units that do not have valid output data
 every cycle in Variable Latency Interfaces. The datapath specification
 by itself, without any pipelining specification, functions as a single
 cycle implementation of the datapath.
