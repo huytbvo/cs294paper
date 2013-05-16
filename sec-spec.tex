@@ -28,6 +28,13 @@ enable ports. They can be treated as single piece of architectural
 state that is conditionally updated by every transaction contingent on
 the clock enable input.
 
+\begin{figure}[htb]
+\centering
+\includegraphics{figures/TMEM.pdf}
+\caption{{\bf Transaction Mem} Shows an example of a Transaction Mem with many virtual write ports, one physical write port, and two read ports}
+\label{fig:CPI}
+\end{figure}
+
 {\bf Transaction Mems}. Transaction Mems are Chisel Components that
 wrap existing Chisel Mem constructs in an IO interface that helps the
 automatic synthesis tools detect bypassing opportunities. On
@@ -54,8 +61,14 @@ a single virtual write port in order to allow the automatic synthesis
 tools to generate fine grained bypass logic. This will be elaborated
 upon in [the section discussing bypass logic generation]. *Remember to
 insert picture later*
+\begin{figure}[htb]
+\centering
+\includegraphics{figures/VLI.pdf}
+\caption{{\bf Variable Latency Interface} Blue wires are user facing IO and read wires are tool facing IO.}
+\label{fig:CPI}
+\end{figure}
 
-{\bf Variable Latency Interfaces}. Variable latency Interfaces are a
+{\bf Variable Latency Interface}. Variable latency Interfaces are a
 Chisel Components that specify a set of user facing IO to allow users
 to integrate an existing variable/multi-cycle latency Chisel module
 into the datapath specification and a set of tool facing IO to allow
