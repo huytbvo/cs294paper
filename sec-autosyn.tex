@@ -35,17 +35,6 @@ interlocks (default), speculation, or bypassing.
 
 We perform the Chisel Node graph transformations required for pipeline register placement and hazard resolution through the Chisel's elaboration time interface, which takes in a list of transformations on the Chisel Node graph and executes the transformations at elaboration time.
 \subsection{Pipeline Register Placement and Stage Coloring}
-The user annotates a set of combinational logic nodes
-and architectural state read/write ports with pipeline stage
-numbers. The user can annotate just the big pieces of combinational
-logic and architectural state they care about, such as ALUs, register
-files, or caches, and the automatic synthesis tool will infer the
-placement of all the other parts of the datapath. Of course, the user
-gains more control over the placement of the pipeline registers by
-adding more pipeline stage annotations. The user can have complete
-control over the placement of the pipeline registers if they annotate
-every combinational logic node and read/write port in the datapath. 
-
 The elaboration time transformation function
 first breaks the original cyclic Chisel Node graph into an acyclic
 graph by separating architectural states into read ports and write
@@ -214,7 +203,7 @@ stage of its write enable or write data signal. The actual Boolean
 hazard condition is {\tt wen \&\& ren} for a {\tt Reg} node and
 {\tt wen \&\& ren \&\& waddr == raddr} for a {\tt TransactionalMem}.
 
-Figure~\ref{fig:haz} shows the hazard conditions that our tool
+Figure~\ref{fig:haz}. shows the hazard conditions that our tool
 identifies on the {\tt TransactionalMem}. when analyzing the generated pipeline in
 Figure~\ref{fig:datapathdag}. We first search the pipeline for all
 state elements. In this example, the {\tt Reg} node and the 

@@ -7,7 +7,7 @@ within the high level programming language Scala. Chisel allows for
 the designer to fully leverage the high level object oriented
 programming features of the Scala language to succinctly describe
 hardware. A design described in Chisel can be mapped to a C++
-simulator or Verilog emitted for either FPGA simulation or ASIC
+simulator or to Verilog emitted for either FPGA simulation or ASIC
 synthesis.
 
 \subsection{Datapath Specification}
@@ -17,8 +17,8 @@ Latency Interface} to allow users to integrate into the datapath
 functional units that do not have valid output available every cycle,
 such as caches and multi-cycle dividers. In the context of our
 specification, Chisel's existing syntax is used to wire up
-combinational logic and modules implementing the Variable Latency
-Interface, which functions as next state logic, to Reg and Transaction
+combinational logic and modules implementing the {\tt Variable Latency
+Interface}, which functions as next state logic, to Reg and Transaction
 Mem constructs, which function as a single architectural state element
 and an addressable array of architectural state respectively.
 
@@ -81,18 +81,18 @@ response valid output. The tools use the request ready output to
 generate logic that puts back pressure on the pipeline stages before
 the variable latency module and use the response valid output to
 generate logic to insert bubbles into the pipeline stages after the
-variable latency module. Figure~\ref{fig:vli}gives and example of how to
+variable latency module. Figure~\ref{fig:vli}. gives and example of how to
 integrate a Data Cache into the datapath specification through
 wrapping it in a Variable Latency Interface.
 
 Everything used in the datapath specification is either a built in
 Chisel construct(Regs and combinational logic) or a ordinary Chisel
-Component(TransactonMems and Variable Latency Module Interfaces). This
+Component({\tt TransactionMems} and {\tt Variable Latency Interfaces}). This
 allows the user to create a datapath specification in the exact same
 way they would write an ordinary Chisel module, with the exception
-that they have to use TransactionalMems in place of Mem constructs and
+that they have to use {\tt TransactionalMems} in place of Mem constructs and
 have to wrap up functional units that do not have valid output data
-every cycle in Variable Latency Interfaces. The datapath specification
+every cycle in {\tt Variable Latency Interfaces}. The datapath specification
 by itself, without any pipelining specification, functions as a single
 cycle implementation of the datapath.
 
